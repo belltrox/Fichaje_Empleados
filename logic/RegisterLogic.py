@@ -1,15 +1,12 @@
 from PyQt6.QtWidgets import QMessageBox
-from database.SQLConexion import conexionDB
+from database.SQLConexion import firebase_db
+from datetime import datetime
+from PyQt6.QtCore import QTimer
 
 class RegisterLogic:
-    def __init__(self, ui):
+    def __init__(self, ui, app_manager):
         self.ui = ui
-        self.conn, self.cursor = conexionDB()
-        if not self.conn:
-            QMessageBox.critical(None, "Error", "No se pudo conectar a la base de datos")
-            raise Exception("No se pudo conectar a la base de datos")
-        
-        # Conectar el botón de registrar
+        self.app_manager = app_manager
         self.ui.btnRegistrar.clicked.connect(self.registrar_empleado)
     
     def validar_campos(self):
@@ -36,35 +33,35 @@ class RegisterLogic:
         password = self.ui.txtPasswd.text().strip()
         
         try:
-            # Verificar si el usuario ya existe
-            self.cursor.execute(
-                "SELECT id FROM Empleados WHERE usuario = %s",
-                (usuario,)
-            )
-            if self.cursor.fetchone():
-                QMessageBox.warning(None, "Advertencia", "El nombre de usuario ya está en uso")
-                return
+            empleados = firebase_db.read_record("Empleados") or {}
             
-            # Insertar nuevo empleado
-            self.cursor.execute(
-                "INSERT INTO Empleados (nombre, usuario, contraseña) "
-                "VALUES (%s, %s, %s)",
-                (nombre, usuario, password)
-            )
-            self.conn.commit()
+            # Verificar si el usuario ya existe
+            for emp_id, emp_data in empleados.items():
+                if emp_data.get('usuario') == usuario:
+                    QMessageBox.warning(None, "Advertencia", "El nombre de usuario ya está en uso")
+                    return
+            
+            # Crear nuevo empleado
+            nuevo_id = f"emp_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+            nuevo_empleado = {
+                'nombre': nombre,
+                'usuario': usuario,
+                'contraseña': password,
+                'fecha_registro': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+            
+            firebase_db.write_record(f"Empleados/{nuevo_id}", nuevo_empleado)
             
             QMessageBox.information(None, "Éxito", "Empleado registrado correctamente")
             self.limpiar_campos()
             
+            # Solo volver al login después de mostrar el mensaje
+            QTimer.singleShot(1000, self.app_manager.mostrar_login)
+            
         except Exception as e:
-            self.conn.rollback()
             QMessageBox.critical(None, "Error", f"Error al registrar empleado: {str(e)}")
     
     def limpiar_campos(self):
         self.ui.txtNombre.clear()
         self.ui.txtUsuario.clear()
         self.ui.txtPasswd.clear()
-    
-    def __del__(self):
-        if self.conn:
-            self.conn.close()

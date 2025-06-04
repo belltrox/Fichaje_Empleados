@@ -1,7 +1,5 @@
-
-from datetime import datetime, time, timedelta  # Añade timedelta
+from datetime import datetime, time, timedelta
 from PyQt6.QtWidgets import QMessageBox
-from database.SQLConexion import conexionDB
 from PyQt6.QtCore import QTimer, QTime
 import sys
 
@@ -9,73 +7,47 @@ class FichajeLogic:
     def __init__(self, ui, empleado_nombre, empleado_id):
         self.ui = ui
         self.empleado_id = empleado_id
-        self.conn = None
-        self.cursor = None
-
-         # Configurar el timer para la hora actual
+        self.empleado_nombre = empleado_nombre
+        
+        # Configurar el timer para la hora actual
         self.timer = QTimer()
         self.timer.timeout.connect(self.actualizar_hora)
-        self.timer.start(1000)  # Actualizar cada 1000ms (1 segundo)
+        self.timer.start(1000)
         
-        try:
-            self.conn, self.cursor = conexionDB()
-            if not self.conn:
-                QMessageBox.critical(None, "Error", "No se pudo conectar a la base de datos")
-                sys.exit(1)
-            # Establecer el nombre del empleado
-            self.ui.lblNombre.setText(empleado_nombre)
-        except Exception as e:
-            QMessageBox.critical(None, "Error", f"Error al inicializar: {str(e)}")
-            sys.exit(1)
-        
+        # Establecer el nombre del empleado
+        self.ui.lblNombre.setText(empleado_nombre)
     
     def actualizar_hora(self):
         """Actualiza el label con la hora actual"""
-        hora_actual = QTime.currentTime().toString('hh:mm:ss') # Formato 12 horas 
+        hora_actual = QTime.currentTime().toString('hh:mm:ss')
         self.ui.lblHora.setText("Hora actual: " + hora_actual)
 
     def obtener_empleado_id(self):
-        # Obtener el ID del empleado almacenado
         return self.empleado_id
     
     def cargar_datos_fichaje(self):
-        
         empleado_id = self.obtener_empleado_id()
         if not empleado_id:
             QMessageBox.warning(None, "Error", "Empleado no identificado")
             return
-    
+        
         fecha_actual = datetime.now().strftime('%Y-%m-%d')
-    
+        
         try:
-            # Consulta modificada para obtener tiempos directamente
-            self.cursor.execute(
-                "SELECT hora_entrada, hora_salida, hora_entrada2, hora_salida2 "
-                "FROM RegistrosHoras "
-                "WHERE empleado_id = %s AND fecha = %s",(empleado_id, fecha_actual)
-            )
-            resultado = self.cursor.fetchone()
-        
-            # Función auxiliar para formatear tiempos
-            def formatear_hora(hora):
-                if hora:
-                    if isinstance(hora, str):  # Si ya viene como string
-                        return hora[:5] if len(hora) >= 5 else "--:--"
-                    elif isinstance(hora, time):  # Si es datetime.time
-                        return hora.strftime('%H:%M')
-                    elif isinstance(hora, timedelta):  # Si es timedelta
-                        total_seconds = hora.total_seconds()
-                        hours = int(total_seconds // 3600)
-                        minutes = int((total_seconds % 3600) // 60)
-                        return f"{hours:02d}:{minutes:02d}"
+            from database.SQLConexion import firebase_db
+            path = f"RegistrosHoras/{empleado_id}/{fecha_actual}"
+            resultado = firebase_db.read_record(path)
+            
+            def formatear_hora(hora_str):
+                if hora_str:
+                    return hora_str[:5] if len(hora_str) >= 5 else "--:--"
                 return "--:--"
-        
-            # Actualizar interfaz
+            
             if resultado:
-                self.ui.lblEntrada.setText(formatear_hora(resultado['hora_entrada']))
-                self.ui.lblSalida.setText(formatear_hora(resultado['hora_salida']))
-                self.ui.lblEntrada2.setText(formatear_hora(resultado['hora_entrada2']))
-                self.ui.lblSalida2.setText(formatear_hora(resultado['hora_salida2']))
+                self.ui.lblEntrada.setText(formatear_hora(resultado.get('hora_entrada', '')))
+                self.ui.lblSalida.setText(formatear_hora(resultado.get('hora_salida', '')))
+                self.ui.lblEntrada2.setText(formatear_hora(resultado.get('hora_entrada2', '')))
+                self.ui.lblSalida2.setText(formatear_hora(resultado.get('hora_salida2', '')))
             else:
                 self.resetear_labels()
             
@@ -97,51 +69,45 @@ class FichajeLogic:
         
         ahora = datetime.now().strftime('%H:%M:%S')
         fecha_actual = datetime.now().strftime('%Y-%m-%d')
-    
-        try:
-            # Verificar estado actual con manejo explícito de NULLs
-            self.cursor.execute(
-                "SELECT "
-                "hora_entrada IS NOT NULL as tiene_entrada, "
-                "hora_salida IS NOT NULL as tiene_salida, "
-                "hora_entrada2 IS NOT NULL as tiene_entrada2, "
-                "hora_salida2 IS NOT NULL as tiene_salida2 "
-                "FROM RegistrosHoras "
-                "WHERE empleado_id = %s AND fecha = %s",(empleado_id, fecha_actual)
-            )
-            estado = self.cursor.fetchone()
         
-            if not estado:
+        try:
+            from database.SQLConexion import firebase_db
+            path = f"RegistrosHoras/{empleado_id}/{fecha_actual}"
+            registro_actual = firebase_db.read_record(path) or {}
+            
+            hora_entrada = registro_actual.get('hora_entrada')
+            hora_salida = registro_actual.get('hora_salida')
+            hora_entrada2 = registro_actual.get('hora_entrada2')
+            hora_salida2 = registro_actual.get('hora_salida2')
+            
+            if not hora_entrada:
                 # Primer fichaje del día
-                self.cursor.execute(
-                    "INSERT INTO RegistrosHoras (empleado_id, fecha, hora_entrada) "
-                    "VALUES (%s, %s, %s)",(empleado_id, fecha_actual, ahora)
-                )
+                data = {
+                    'hora_entrada': ahora,
+                    'empleado_id': empleado_id,
+                    'empleado_nombre': self.empleado_nombre,
+                    'fecha': fecha_actual
+                }
+                firebase_db.write_record(path, data)
                 self.ui.lblEntrada.setText(ahora[:5])
                 mensaje = "Entrada registrada"
             
-            elif estado['tiene_entrada'] and not estado['tiene_salida']:
-                self.cursor.execute(
-                    "UPDATE RegistrosHoras SET hora_salida = %s "
-                    "WHERE empleado_id = %s AND fecha = %s ",(ahora, empleado_id, fecha_actual)
-                )
+            elif hora_entrada and not hora_salida:
+                data = {'hora_salida': ahora}
+                firebase_db.update_record(path, data)
                 self.ui.lblSalida.setText(ahora[:5])
                 mensaje = "Salida registrada"
-                self.actualizar_total_horas(empleado_id) # actualizar total horas primer turno
-
-            elif estado['tiene_salida'] and not estado['tiene_entrada2']:
-                self.cursor.execute(
-                    "UPDATE RegistrosHoras SET hora_entrada2 = %s "
-                    "WHERE empleado_id = %s AND fecha = %s AND hora_entrada2 IS NULL",(ahora, empleado_id, fecha_actual)
-                )
+                self.actualizar_total_horas(empleado_id)
+            
+            elif hora_salida and not hora_entrada2:
+                data = {'hora_entrada2': ahora}
+                firebase_db.update_record(path, data)
                 self.ui.lblEntrada2.setText(ahora[:5])
                 mensaje = "Segunda entrada registrada"
             
-            elif estado['tiene_entrada2'] and not estado['tiene_salida2']:
-                self.cursor.execute(
-                "UPDATE RegistrosHoras SET hora_salida2 = %s "
-                "WHERE empleado_id = %s AND fecha = %s",(ahora, empleado_id, fecha_actual)
-            )
+            elif hora_entrada2 and not hora_salida2:
+                data = {'hora_salida2': ahora}
+                firebase_db.update_record(path, data)
                 self.ui.lblSalida2.setText(ahora[:5])
                 self.actualizar_total_horas(empleado_id)
                 mensaje = "Segunda salida registrada"
@@ -150,12 +116,10 @@ class FichajeLogic:
                 QMessageBox.warning(None, "Aviso", "Ya completó todos los fichajes hoy")
                 return
             
-            self.conn.commit()
             QMessageBox.information(None, "Éxito", mensaje)
-            self.cargar_datos_fichaje()  # Actualizar vista de las horas
+            self.cargar_datos_fichaje()
         
         except Exception as e:
-            self.conn.rollback()
             error_msg = f"Error al registrar: {str(e)}" if str(e) != "0" else "Error en formato de tiempos"
             QMessageBox.critical(None, "Error", error_msg)
             print(f"Error detallado: {e.__class__.__name__}: {str(e)}")
@@ -163,55 +127,38 @@ class FichajeLogic:
     def actualizar_total_horas(self, empleado_id):
         """Calcula y actualiza el total de horas trabajadas"""
         fecha_actual = datetime.now().strftime('%Y-%m-%d')
-    
+        
         try:
-            # Obtener todos los tiempos registrados como timedelta
-            self.cursor.execute(
-                "SELECT hora_entrada as he, hora_salida as hs, "
-                "hora_entrada2 as he2, hora_salida2 as hs2 "
-                "FROM RegistrosHoras "
-                "WHERE empleado_id = %s AND fecha = %s",(empleado_id, fecha_actual)
-            )
-            tiempos = self.cursor.fetchone()
-        
+            from database.SQLConexion import firebase_db
+            path = f"RegistrosHoras/{empleado_id}/{fecha_actual}"
+            registro = firebase_db.read_record(path)
+            
+            if not registro:
+                return
+                
             total_horas = 0.0
-        
-            # Calcular diferencia primera jornada
-            if tiempos['he'] and tiempos['hs']:
-                if isinstance(tiempos['he'], timedelta) and isinstance(tiempos['hs'], timedelta):
-                    total_horas += (tiempos['hs'] - tiempos['he']).total_seconds() / 3600
-                else:
-                    # Convertir a timedelta si es necesario
-                    h_entrada = tiempos['he'].total_seconds() if isinstance(tiempos['he'], timedelta) else 0
-                    h_salida = tiempos['hs'].total_seconds() if isinstance(tiempos['hs'], timedelta) else 0
-                    total_horas += (h_salida - h_entrada) / 3600
-        
-            # Calcular diferencia segunda jornada (si existe)
-            if tiempos['he2'] and tiempos['hs2']:
-                if isinstance(tiempos['he2'], timedelta) and isinstance(tiempos['hs2'], timedelta):
-                    total_horas += (tiempos['hs2'] - tiempos['he2']).total_seconds() / 3600
-                else:
-                    # Convertir a timedelta si es necesario
-                    h_entrada2 = tiempos['he2'].total_seconds() if isinstance(tiempos['he2'], timedelta) else 0
-                    h_salida2 = tiempos['hs2'].total_seconds() if isinstance(tiempos['hs2'], timedelta) else 0
-                    total_horas += (h_salida2 - h_entrada2) / 3600
-        
-            # Actualizar en la base de datos
-            self.cursor.execute(
-                "UPDATE RegistrosHoras SET total_horas = %s "
-                "WHERE empleado_id = %s AND fecha = %s",(round(total_horas, 2), empleado_id, fecha_actual)
-            )
-            self.conn.commit()
-        
+            
+            # Calcular primera jornada
+            if registro.get('hora_entrada') and registro.get('hora_salida'):
+                he = datetime.strptime(registro['hora_entrada'], '%H:%M:%S')
+                hs = datetime.strptime(registro['hora_salida'], '%H:%M:%S')
+                total_horas += (hs - he).total_seconds() / 3600
+            
+            # Calcular segunda jornada (si existe)
+            if registro.get('hora_entrada2') and registro.get('hora_salida2'):
+                he2 = datetime.strptime(registro['hora_entrada2'], '%H:%M:%S')
+                hs2 = datetime.strptime(registro['hora_salida2'], '%H:%M:%S')
+                total_horas += (hs2 - he2).total_seconds() / 3600
+            
+            # Actualizar en Firebase
+            firebase_db.update_record(path, {'total_horas': round(total_horas, 2)})
+            
         except Exception as e:
-            self.conn.rollback()
             print(f"Error al calcular horas: {str(e)}")
             QMessageBox.warning(None, "Error", f"No se pudieron calcular las horas: {str(e)}")
     
     def __del__(self):
         try:
-            self.timer.stop() # Detener Timer de lblHora
-            if hasattr(self, 'conn') and self.conn:
-                self.conn.close()
+            self.timer.stop()
         except Exception as e:
-            print(f"Error al cerrar la conexión: {str(e)}")
+            print(f"Error al detener el timer: {str(e)}")

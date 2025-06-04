@@ -34,7 +34,7 @@ class RegisterWindow(QMainWindow):
         self.app_manager = app_manager
         
         # Inicializar la lógica de registro
-        self.register_logic = RegisterLogic(self.ui)
+        self.register_logic = RegisterLogic(self.ui, self.app_manager)
         
         # Conectar el botón de registro para volver al login después
         self.ui.btnRegistrar.clicked.connect(self.volver_al_login)
@@ -93,4 +93,3 @@ class AppManager:
 if __name__ == "__main__":
     app_manager = AppManager()
     app_manager.run()
-
