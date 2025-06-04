@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import QMessageBox
 from database.SQLConexion import firebase_db
 from datetime import datetime
 from PyQt6.QtCore import QTimer
+from logic.Encrypted_utils import hash_password
 
 class RegisterLogic:
     def __init__(self, ui, app_manager):
@@ -46,7 +47,7 @@ class RegisterLogic:
             nuevo_empleado = {
                 'nombre': nombre,
                 'usuario': usuario,
-                'contraseña': password,
+                'contraseña_hash': hash_password(password),  # Guardar el hash
                 'fecha_registro': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             }
             

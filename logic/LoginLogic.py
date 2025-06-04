@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QMessageBox
 from database.SQLConexion import firebase_db
-
+from logic.Encrypted_utils import verify_password
 class LoginLogic:
     def __init__(self, ui, app_manager):
         self.ui = ui
@@ -13,7 +13,16 @@ class LoginLogic:
     def validar_login(self):
         usuario = self.ui.txtUsuario.text().strip()
         password = self.ui.txtPasswd.text().strip()
+
+        empleados = firebase_db.read_record("Empleados") or {}
+        for emp_id, emp_data in empleados.items():
+            if emp_data.get('usuario') == usuario:
+                if verify_password(emp_data['contraseña_hash'], password):
+                    self.app_manager.mostrar_fichaje(emp_data['nombre'], emp_id)
+                    return
     
+        QMessageBox.warning(None, "Error", "Credenciales incorrectas")
+
         if not usuario or not password:
             QMessageBox.warning(None, "Advertencia", "Usuario y contraseña son obligatorios")
             return
