@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'c:\Users\jonat\Desktop\Proyectos Python\Fichaje_Empleados\screens\fichaje_Window.ui'
+# Form implementation generated from reading ui file 'c:\Users\jonat\Desktop\Proyectos Python\Fichaje_Empleados\screens_ui\fichaje_Window.ui'
 #
 # Created by: PyQt6 UI code generator 6.4.2
 #
@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(775, 389)
+        MainWindow.resize(758, 389)
         MainWindow.setStyleSheet("")
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -48,9 +48,11 @@ class Ui_MainWindow(object):
         font.setPointSize(8)
         font.setBold(True)
         self.btnFichar.setFont(font)
-        self.btnFichar.setStyleSheet("background-color:#d9d9d9 ;\n"
+        self.btnFichar.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        self.btnFichar.setStyleSheet("background-color: #d9d9d9;\n"
 "border-radius: 6px;\n"
-"padding: 5px;")
+"padding: 5px;\n"
+"border: 2px solid rgba(0, 0, 0, 0.2);")
         self.btnFichar.setObjectName("btnFichar")
         self.label = QtWidgets.QLabel(parent=self.centralwidget)
         self.label.setGeometry(QtCore.QRect(230, 100, 131, 16))
@@ -113,9 +115,17 @@ class Ui_MainWindow(object):
         font.setBold(False)
         font.setItalic(True)
         self.label_8.setFont(font)
+        self.label_8.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.label_8.setMouseTracking(False)
         self.label_8.setStyleSheet("background-color: #afdce4;")
         self.label_8.setText("")
         self.label_8.setObjectName("label_8")
+        self.btnAjustes = QtWidgets.QLabel(parent=self.centralwidget)
+        self.btnAjustes.setGeometry(QtCore.QRect(710, 30, 21, 21))
+        self.btnAjustes.setText("")
+        self.btnAjustes.setPixmap(QtGui.QPixmap("c:\\Users\\jonat\\Desktop\\Proyectos Python\\Fichaje_Empleados\\screens_ui\\../../../../Downloads/imgSettings.png"))
+        self.btnAjustes.setScaledContents(True)
+        self.btnAjustes.setObjectName("btnAjustes")
         self.label_8.raise_()
         self.label_6.raise_()
         self.label_7.raise_()
@@ -132,6 +142,7 @@ class Ui_MainWindow(object):
         self.lblSalida2.raise_()
         self.lblHora.raise_()
         self.calendarWidget.raise_()
+        self.btnAjustes.raise_()
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)

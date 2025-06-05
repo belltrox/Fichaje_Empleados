@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>775</width>
+    <width>758</width>
     <height>389</height>
    </rect>
   </property>
@@ -97,10 +97,14 @@ border-radius: 5px;</string>
       <bold>true</bold>
      </font>
     </property>
+    <property name="cursor">
+     <cursorShape>ArrowCursor</cursorShape>
+    </property>
     <property name="styleSheet">
-     <string notr="true">background-color:#d9d9d9 ;
+     <string notr="true">background-color: #d9d9d9;
 border-radius: 6px;
-padding: 5px;</string>
+padding: 5px;
+border: 2px solid rgba(0, 0, 0, 0.2);</string>
     </property>
     <property name="text">
      <string>FICHAR </string>
@@ -316,11 +320,36 @@ border-radius: 10px;</string>
       <bold>false</bold>
      </font>
     </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="mouseTracking">
+     <bool>false</bool>
+    </property>
     <property name="styleSheet">
      <string notr="true">background-color: #afdce4;</string>
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="btnAjustes">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>30</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>../../../../Downloads/imgSettings.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
     </property>
    </widget>
    <zorder>label_8</zorder>
@@ -339,6 +368,7 @@ border-radius: 10px;</string>
    <zorder>lblSalida2</zorder>
    <zorder>lblHora</zorder>
    <zorder>calendarWidget</zorder>
+   <zorder>btnAjustes</zorder>
   </widget>
  </widget>
  <resources/>
