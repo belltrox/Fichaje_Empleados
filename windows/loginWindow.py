@@ -7,9 +7,7 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets 
-from PyQt6.QtWidgets import QApplication, QLabel 
 from PyQt6.QtGui import QPixmap 
-import sys 
 import os
 
 class Ui_MainWindow(object):

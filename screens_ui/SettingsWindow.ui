@@ -131,7 +131,7 @@ padding: 5px;</string>
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnConfirmar">
+   <widget class="QPushButton" name="btnCambiarContrasena">
     <property name="geometry">
      <rect>
       <x>110</x>
@@ -238,6 +238,24 @@ padding: 5px;</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnVolver">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>30</y>
+      <width>51</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: #d9d9d9;
+border-radius: 6px;
+padding: 5px;</string>
+    </property>
+    <property name="text">
+     <string>Volver</string>
     </property>
    </widget>
   </widget>

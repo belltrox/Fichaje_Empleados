@@ -305,7 +305,7 @@ border-radius: 10px;</string>
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="label_8">
+   <widget class="QLabel" name="lblFondo">
     <property name="geometry">
      <rect>
       <x>-10</x>
@@ -321,7 +321,7 @@ border-radius: 10px;</string>
      </font>
     </property>
     <property name="cursor">
-     <cursorShape>PointingHandCursor</cursorShape>
+     <cursorShape>ArrowCursor</cursorShape>
     </property>
     <property name="mouseTracking">
      <bool>false</bool>
@@ -336,8 +336,8 @@ border-radius: 10px;</string>
    <widget class="QLabel" name="btnAjustes">
     <property name="geometry">
      <rect>
-      <x>710</x>
-      <y>30</y>
+      <x>700</x>
+      <y>50</y>
       <width>21</width>
       <height>21</height>
      </rect>
@@ -352,7 +352,7 @@ border-radius: 10px;</string>
      <bool>true</bool>
     </property>
    </widget>
-   <zorder>label_8</zorder>
+   <zorder>lblFondo</zorder>
    <zorder>label_6</zorder>
    <zorder>label_7</zorder>
    <zorder>lblNombre</zorder>

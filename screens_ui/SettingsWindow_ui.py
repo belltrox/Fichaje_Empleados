@@ -49,16 +49,16 @@ class Ui_MainWindow(object):
 "padding: 5px;")
         self.lblNombre.setText("")
         self.lblNombre.setObjectName("lblNombre")
-        self.btnConfirmar = QtWidgets.QPushButton(parent=self.centralwidget)
-        self.btnConfirmar.setGeometry(QtCore.QRect(110, 380, 81, 31))
+        self.btnCambiarContrasena = QtWidgets.QPushButton(parent=self.centralwidget)
+        self.btnCambiarContrasena.setGeometry(QtCore.QRect(110, 380, 81, 31))
         font = QtGui.QFont()
         font.setBold(True)
-        self.btnConfirmar.setFont(font)
-        self.btnConfirmar.setStyleSheet("background-color: #d9d9d9;\n"
+        self.btnCambiarContrasena.setFont(font)
+        self.btnCambiarContrasena.setStyleSheet("background-color: #d9d9d9;\n"
 "border-radius: 6px;\n"
 "padding: 5px;\n"
 "")
-        self.btnConfirmar.setObjectName("btnConfirmar")
+        self.btnCambiarContrasena.setObjectName("btnCambiarContrasena")
         self.lblUsuario = QtWidgets.QLabel(parent=self.centralwidget)
         self.lblUsuario.setGeometry(QtCore.QRect(50, 160, 211, 31))
         self.lblUsuario.setStyleSheet("background-color: #d9d9d9;\n"
@@ -92,6 +92,12 @@ class Ui_MainWindow(object):
         self.label_6.setFont(font)
         self.label_6.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_6.setObjectName("label_6")
+        self.btnVolver = QtWidgets.QPushButton(parent=self.centralwidget)
+        self.btnVolver.setGeometry(QtCore.QRect(250, 30, 51, 24))
+        self.btnVolver.setStyleSheet("background-color: #d9d9d9;\n"
+"border-radius: 6px;\n"
+"padding: 5px;")
+        self.btnVolver.setObjectName("btnVolver")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -105,5 +111,6 @@ class Ui_MainWindow(object):
         self.label_3.setText(_translate("MainWindow", "Contraseña actual"))
         self.label_4.setText(_translate("MainWindow", "Contraseña nueva"))
         self.label_5.setText(_translate("MainWindow", "Confirmar contraseña"))
-        self.btnConfirmar.setText(_translate("MainWindow", "Confirmar"))
+        self.btnCambiarContrasena.setText(_translate("MainWindow", "Confirmar"))
         self.label_6.setText(_translate("MainWindow", "Ajustes"))
+        self.btnVolver.setText(_translate("MainWindow", "Volver"))
