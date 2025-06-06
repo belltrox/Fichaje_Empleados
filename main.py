@@ -5,7 +5,7 @@ from windows.fichajeWindow import Ui_MainWindow as FichajeUI
 from windows.RegisterWindow import Ui_MainWindow as RegisterUI
 from windows.loginWindow import Ui_MainWindow as LoginUI
 from windows.SettingsWindow import Ui_MainWindow as SettingsUI
-from database.metodos_sql import FichajeLogic
+from logic.FichajeLogic import FichajeLogic
 from logic.RegisterLogic import RegisterLogic
 from logic.LoginLogic import LoginLogic
 from logic.SettingsLogic import SettingsLogic

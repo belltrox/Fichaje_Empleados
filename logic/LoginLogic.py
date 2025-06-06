@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QMessageBox
-from database.SQLConexion import firebase_db
+from database.ConexionFirebase import firebase_db
 from logic.Encrypted_utils import verify_password
 class LoginLogic:
     def __init__(self, ui, app_manager):

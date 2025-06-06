@@ -34,7 +34,7 @@ class FichajeLogic:
         fecha_actual = datetime.now().strftime('%Y-%m-%d')
         
         try:
-            from database.SQLConexion import firebase_db
+            from database.ConexionFirebase import firebase_db
             path = f"RegistrosHoras/{empleado_id}/{fecha_actual}"
             resultado = firebase_db.read_record(path)
             
@@ -71,7 +71,7 @@ class FichajeLogic:
         fecha_actual = datetime.now().strftime('%Y-%m-%d')
         
         try:
-            from database.SQLConexion import firebase_db
+            from database.ConexionFirebase import firebase_db
             path = f"RegistrosHoras/{empleado_id}/{fecha_actual}"
             registro_actual = firebase_db.read_record(path) or {}
             
@@ -129,7 +129,7 @@ class FichajeLogic:
         fecha_actual = datetime.now().strftime('%Y-%m-%d')
         
         try:
-            from database.SQLConexion import firebase_db
+            from database.ConexionFirebase import firebase_db
             path = f"RegistrosHoras/{empleado_id}/{fecha_actual}"
             registro = firebase_db.read_record(path)
             

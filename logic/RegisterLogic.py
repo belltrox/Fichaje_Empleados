@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QMessageBox
-from database.SQLConexion import firebase_db
+from database.ConexionFirebase import firebase_db
 from datetime import datetime
 from PyQt6.QtCore import QTimer
 from logic.Encrypted_utils import hash_password
