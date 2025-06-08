@@ -1,4 +1,4 @@
-from class_firebase_database import FirebaseDB
+from database.class_firebase_database import FirebaseDB
 import os
 
 # Configuración de Firebase
