@@ -1,4 +1,0 @@
-firebase-admin
-pyqt6
-pyqt6-tools
-pycrytodome

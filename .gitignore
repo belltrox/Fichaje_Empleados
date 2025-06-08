@@ -13,6 +13,4 @@ __pycache__/
 .env
 *.env
 
-# Otros archivos no deseados
-*.log
-*.sqlite3
+fichajeempleados_credentials.json
