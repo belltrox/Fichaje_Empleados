@@ -13,5 +13,7 @@ __pycache__/
 .env
 *.env
 
+# Excluir archivos JSON sensibles
 fichajeempleados_credentials.json
 *.json
+mi_documento.json  # Agrega esta línea para excluir específicamente tu documento
